@@ -8,7 +8,7 @@ Rancangan lengkap ada di `docs/RANCANGAN_PROYEK.md`. Baca dokumen itu sebelum me
 
 ## Status tahap
 
-- Tahap aktif: **Tahap 1 — Tombol mengambang (overlay) tanpa aksi**
+- Tahap aktif: **Tahap 1 — menunggu uji oleh developer** (tombol mengambang overlay tanpa aksi)
 - Tahap selesai: belum ada
 
 Perbarui bagian ini setiap kali developer menyatakan sebuah tahap selesai.

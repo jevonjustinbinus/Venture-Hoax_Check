@@ -144,15 +144,15 @@ Keyakinan ciri dianggap tinggi jika terdeteksi oleh aturan, atau oleh minimal du
 
 ## 12. Proyek referensi open source
 
-| Repositori | Dipakai untuk | Tahap | Catatan |
-|---|---|---|---|
-| https://github.com/ervareza/screen-translator | Tombol mengambang, foreground service, MediaProjection, perbaikan Android 14/15 | 1-2 | Paling mirip konsepnya; cek lisensi |
-| https://github.com/SavinduK/SnapCrop | Overlay `SYSTEM_ALERT_WINDOW` dan lapisan crop transparan | 1, 3 | Pengambilan layarnya memakai AccessibilityService; bagian itu jangan diikuti |
-| https://github.com/EdwardSierra/ScreenshotApp | Alur ambil layar penuh lalu crop, penyimpanan izin screen capture | 2-3 | Pemicunya Quick Settings tile; cek lisensi |
-| https://github.com/cvzi/ScreenshotTile | Referensi matang: screenshot area tertentu, MediaProjection di berbagai versi Android | 2-3 | GPLv3, jangan salin kode. Menurut dokumentasinya, tombol mengambangnya bergantung pada layanan aksesibilitas; jangan ikuti pendekatan itu |
-| https://github.com/mtsahakis/MediaProjectionDemo | Dasar MediaProjection API | 2 | Kode lama, hanya untuk memahami konsep |
+| Repositori | Lisensi | Dipakai untuk | Tahap | Catatan |
+|---|---|---|---|---|
+| https://github.com/ervareza/screen-translator | MIT | Overlay `TYPE_APPLICATION_OVERLAY`, notifikasi foreground service dengan aksi berhenti, MediaProjection, perbaikan Android 14/15 | 1-2 | Paling mirip konsepnya, tetapi pemicu tangkap layarnya lewat layanan aksesibilitas (`InactivityAccessibilityService`); bagian itu jangan diikuti |
+| https://github.com/SavinduK/SnapCrop | MIT menurut README (file `LICENSE` tidak disertakan); diperlakukan sebagai MIT | Pola pasang/lepas overlay dan lapisan crop transparan | 1, 3 | README mencantumkan izin tampil di atas aplikasi lain (`SYSTEM_ALERT_WINDOW`), tetapi berdasarkan kodenya overlay dipasang dengan `TYPE_ACCESSIBILITY_OVERLAY` dari layanan aksesibilitas, dan pemicunya juga lewat layanan aksesibilitas. Bagian itu jangan diikuti |
+| https://github.com/EdwardSierra/ScreenshotApp | GPLv3 | Alur ambil layar penuh lalu crop, penyimpanan izin screen capture | 2-3 | Pemicunya Quick Settings tile. Jangan salin kode kecuali aplikasi dirilis sebagai GPLv3 (diputuskan di awal tahap 2) |
+| https://github.com/cvzi/ScreenshotTile | GPLv3 | Referensi matang: screenshot area tertentu, MediaProjection di berbagai versi Android | 2-3 | Jangan salin kode kecuali aplikasi dirilis sebagai GPLv3. Tombol mengambangnya bergantung pada layanan aksesibilitas (`TYPE_ACCESSIBILITY_OVERLAY`); jangan ikuti pendekatan itu |
+| https://github.com/mtsahakis/MediaProjectionDemo | "Do whatever you want License." (tidak standar) | Dasar MediaProjection API | 2 | Kode lama, hanya untuk memahami konsep |
 
-Kebijakan penggunaan kode referensi dijelaskan di `CLAUDE.md`.
+Proyek ini memasang tombol mengambang dengan `SYSTEM_ALERT_WINDOW` + `TYPE_APPLICATION_OVERLAY` dari foreground service biasa, cara yang tidak dipakai oleh referensi mana pun. Rincian file dan kode yang diambil ada di `docs/REFERENSI.md`. Kebijakan penggunaan kode referensi dijelaskan di `CLAUDE.md`.
 
 ## 13. Tahapan pengerjaan
 

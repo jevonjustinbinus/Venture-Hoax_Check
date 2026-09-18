@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">Cek Hoaks</string>
+
+    <!-- Layar utama -->
+    <string name="main_penjelasan">Ragu dengan informasi yang kamu baca? Ketuk tombol cek yang mengambang di layar untuk memeriksanya tanpa perlu pindah aplikasi.</string>
+    <string name="main_label_izin">Izin tampil di atas aplikasi lain</string>
+    <string name="main_izin_diberikan">Sudah diizinkan</string>
+    <string name="main_izin_belum">Belum diizinkan</string>
+    <string name="main_petunjuk_izin">Setelah halaman pengaturan terbuka, cari dan pilih \"%1$s\" di daftar aplikasi, lalu aktifkan izinnya. Setelah itu, kembali ke aplikasi ini.</string>
+    <string name="main_tombol_berikan_izin">Berikan izin</string>
+    <string name="main_tombol_aktifkan">Aktifkan tombol cek</string>
+    <string name="main_tombol_matikan">Matikan tombol cek</string>
+    <string name="main_status_tombol_aktif">Tombol cek sedang tampil. Buka aplikasi lain untuk melihatnya.</string>
+    <string name="main_status_tombol_mati">Tombol cek belum aktif.</string>
+
+    <!-- Tombol mengambang -->
+    <string name="tombol_cek_deskripsi">Cek informasi di layar ini</string>
+
+    <!-- Notifikasi -->
+    <string name="notif_channel_nama">Tombol cek</string>
+    <string name="notif_channel_deskripsi">Pemberitahuan saat tombol cek sedang tampil</string>
+    <string name="notif_judul">Tombol cek aktif</string>
+    <string name="notif_isi">Ketuk untuk membuka aplikasi.</string>
+    <string name="notif_aksi_matikan">Matikan</string>
 </resources>

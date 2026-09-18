@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="utama">#FF0F766E</color>
+    <!-- Warna utama dengan opacity sekitar 93% (alpha 0xED) -->
+    <color name="tombol_cek_latar">#ED0F766E</color>
 </resources>
