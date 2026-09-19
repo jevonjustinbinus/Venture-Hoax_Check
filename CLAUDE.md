@@ -8,8 +8,8 @@ Rancangan lengkap ada di `docs/RANCANGAN_PROYEK.md`. Baca dokumen itu sebelum me
 
 ## Status tahap
 
-- Tahap aktif: **Tahap 2 selesai** (tahap 3 belum dimulai)
-- Tahap selesai: Tahap 1 (tombol mengambang overlay), Tahap 2 (tombol bisa digeser, ketukan mengambil screenshot layar penuh sebagai Bitmap)
+- Tahap aktif: **Tahap 3 selesai, Tahap 4 belum dimulai**
+- Tahap selesai: Tahap 1 (tombol mengambang overlay), Tahap 2 (tombol bisa digeser, ketukan mengambil screenshot layar penuh sebagai Bitmap), Tahap 3 (layar pilih area, menghasilkan Bitmap potongan di memori; mode navigasi gestur belum diuji)
 
 Perbarui bagian ini setiap kali developer menyatakan sebuah tahap selesai.
 
@@ -18,10 +18,11 @@ Perbarui bagian ini setiap kali developer menyatakan sebuah tahap selesai.
 1. Kerjakan hanya cakupan tahap aktif. Jangan menambahkan fitur, izin, dependensi, atau kerangka kode untuk tahap berikutnya, termasuk kelas kosong dan komentar TODO.
 2. Sebelum menulis kode untuk tahap baru, tampilkan rencana singkat (file yang dibuat atau diubah beserta fungsinya) dan tunggu persetujuan developer.
 3. Developer belum berpengalaman membuat aplikasi Android. Setelah perubahan, jelaskan dalam Bahasa Indonesia apa yang dibuat dan kenapa. Beri komentar singkat berbahasa Indonesia hanya pada konsep Android yang tidak jelas dari kodenya.
-4. Semua teks yang tampil ke pengguna ditulis di `res/values/strings.xml` dalam Bahasa Indonesia semi-formal yang ramah.
+4. Semua teks yang tampil ke pengguna ditulis di `res/values/strings.xml` dalam Bahasa Indonesia semi-formal yang ramah. Teks UI menghindari kata ganti orang kedua (misalnya "kamu", "Anda", "-mu").
 5. Pastikan build berhasil sebelum menyatakan pekerjaan selesai.
 6. Jika ada keputusan yang tidak dibahas di rancangan, tanyakan dulu. Jangan menebak.
 7. Proyek ini tidak memakai `AccessibilityService` dalam bentuk apa pun.
+8. Hanya developer yang menjalankan perintah git yang mengubah repositori (add, commit, push, pull, merge, rebase, reset, stash, checkout/switch branch, tag, dan sejenisnya). Claude hanya boleh memakai perintah git yang membaca, seperti `git status`, `git diff`, dan `git log`. Saat pekerjaan siap di-commit, tulis ringkasan perubahan dan usulan pesan commit di chat, lalu developer yang menjalankannya.
 
 ## Kebijakan kode referensi
 

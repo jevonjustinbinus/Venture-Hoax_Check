@@ -2,7 +2,7 @@
     <string name="app_name">Cek Hoaks</string>
 
     <!-- Layar utama -->
-    <string name="main_penjelasan">Ragu dengan informasi yang kamu baca? Ketuk tombol cek yang mengambang di layar untuk memeriksanya tanpa perlu pindah aplikasi.</string>
+    <string name="main_penjelasan">Ragu dengan informasi yang sedang dibaca? Ketuk tombol cek yang mengambang di layar untuk memeriksanya tanpa perlu pindah aplikasi.</string>
     <string name="main_label_izin">Izin tampil di atas aplikasi lain</string>
     <string name="main_izin_diberikan">Sudah diizinkan</string>
     <string name="main_izin_belum">Belum diizinkan</string>
@@ -15,8 +15,8 @@
 
     <!-- Penjelasan sebelum dialog izin rekam layar -->
     <string name="rekam_judul">Izinkan tombol cek melihat layar</string>
-    <string name="rekam_penjelasan">Supaya tombol cek bisa mengambil gambar layar, aplikasi ini butuh izin rekam layar.\n\n• Layar hanya dibaca saat kamu menekan tombol cek.\n• Gambar layar tidak disimpan di HP.\n• Jika di dialog berikutnya ada pilihan, pilih \"Seluruh layar\", bukan satu aplikasi.</string>
-    <string name="rekam_catatan_notifikasi">Selama tombol cek aktif, Android akan menyembunyikan isi notifikasi demi keamananmu. Isinya akan tampil normal lagi setelah tombol cek dimatikan.</string>
+    <string name="rekam_penjelasan">Supaya tombol cek bisa mengambil gambar layar, aplikasi ini butuh izin rekam layar.\n\n• Layar hanya dibaca saat tombol cek ditekan.\n• Gambar layar tidak disimpan di HP.\n• Jika di dialog berikutnya ada pilihan, pilih \"Seluruh layar\", bukan satu aplikasi.</string>
+    <string name="rekam_catatan_notifikasi">Selama tombol cek aktif, Android akan menyembunyikan isi notifikasi demi keamanan. Isinya akan tampil normal lagi setelah tombol cek dimatikan.</string>
     <string name="rekam_lanjutkan">Lanjutkan</string>
     <string name="rekam_batal">Batal</string>
     <string name="rekam_ditolak">Tombol cek belum bisa aktif. Izin rekam layar diperlukan agar tombol bisa mengambil gambar layar.</string>
@@ -24,7 +24,19 @@
     <!-- Tombol mengambang -->
     <string name="tombol_cek_deskripsi">Cek informasi di layar ini</string>
     <string name="tangkap_gagal">Gambar layar belum berhasil diambil. Coba ketuk tombol cek lagi.</string>
-    <string name="tangkap_thumbnail_deskripsi">Hasil tangkapan layar</string>
+    <string name="tangkap_thumbnail_deskripsi">Potongan layar yang dipilih</string>
+
+    <!-- Layar pilih area -->
+    <string name="pilih_petunjuk">Geser dan atur kotak pada bagian yang ingin dicek</string>
+    <string name="pilih_area_deskripsi">Gambar layar dengan kotak pilihan. Geser kotak, sudut, atau sisinya untuk memilih bagian yang ingin dicek.</string>
+    <string name="pilih_seluruh_layar">Pilih seluruh layar</string>
+    <string name="pilih_seluruh_layar_deskripsi">Pilih seluruh layar untuk dicek</string>
+    <string name="pilih_batal">Batal</string>
+    <string name="pilih_batal_deskripsi">Batal dan kembali ke layar sebelumnya</string>
+    <string name="pilih_cek">Cek Sekarang</string>
+    <string name="pilih_cek_deskripsi">Cek bagian layar di dalam kotak</string>
+    <string name="pilih_gagal_dibuka">Layar pilih area belum bisa dibuka. Coba ketuk tombol cek lagi.</string>
+    <string name="potong_gagal">Bagian layar belum berhasil dipotong. Coba ketuk tombol cek lagi.</string>
 
     <!-- Notifikasi -->
     <string name="notif_channel_nama">Tombol cek</string>

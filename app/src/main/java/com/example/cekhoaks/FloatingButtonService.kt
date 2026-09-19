@@ -1,6 +1,5 @@
 package com.example.cekhoaks
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
@@ -60,8 +59,10 @@ class FloatingButtonService : Service() {
     private var tombol: FloatingButtonView? = null
     private var paramsTombol: WindowManager.LayoutParams? = null
     private var yTombolSaatDisentuh = 0
-    private var sedangMengambil = false
-    private var thumbnail: View? = null
+    private var status = Status.SIAP
+    private var overlayPilih: OverlayPilihArea? = null
+    private var thumbnail: ImageView? = null
+    private var bitmapThumbnail: Bitmap? = null
     private val lepasThumbnailOtomatis = Runnable { lepasThumbnail() }
 
     override fun onCreate() {
@@ -174,11 +175,13 @@ class FloatingButtonService : Service() {
     /** Aman dipanggil lebih dari sekali. */
     private fun bersihkan() {
         handlerUtama.removeCallbacksAndMessages(null)
+        overlayPilih?.tutup()
+        overlayPilih = null
         lepasThumbnail()
         lepasTombol()
         pengambil?.hentikan()
         pengambil = null
-        sedangMengambil = false
+        status = Status.SIAP
         _berjalan.value = false
     }
 
@@ -280,27 +283,22 @@ class FloatingButtonService : Service() {
         val layar = getSystemService(DisplayManager::class.java).getDisplay(Display.DEFAULT_DISPLAY)
         @Suppress("DEPRECATION")
         layar?.getRealMetrics(metrik) ?: metrik.setTo(resources.displayMetrics)
+        // Android 10 ke bawah belum punya API resmi untuk tinggi bilah sistem di luar Activity.
         return metrik.heightPixels - dimenSistem("status_bar_height") - dimenSistem("navigation_bar_height")
     }
 
-    // Android 10 ke bawah belum punya API resmi untuk tinggi bilah sistem di luar Activity,
-    // jadi nilainya dibaca dari resource milik sistem.
-    @SuppressLint("DiscouragedApi", "InternalInsetResource")
-    private fun dimenSistem(nama: String): Int {
-        val id = resources.getIdentifier(nama, "dimen", "android")
-        return if (id > 0) resources.getDimensionPixelSize(id) else 0
-    }
-
-    // --- Pengambilan layar ---
+    // --- Pengambilan layar dan pilih area ---
 
     private fun ambilLayar() {
         val view = tombol ?: return
         val pengambilAktif = pengambil ?: return
-        if (sedangMengambil) {
-            Log.d(TAG, "Pengambilan layar masih berjalan, ketukan diabaikan")
+        if (status != Status.SIAP) {
+            // Mencegah ketukan ganda: selama layar diambil atau area sedang dipilih,
+            // ketukan tidak memicu pengambilan baru.
+            Log.d(TAG, "Ketukan diabaikan, status: $status")
             return
         }
-        sedangMengambil = true
+        status = Status.MENGAMBIL
 
         // Tombol dan thumbnail disembunyikan dulu agar tidak ikut tertangkap. Jeda memberi waktu
         // sistem menggambar ulang layar tanpa keduanya sebelum frame terbaru diambil.
@@ -312,18 +310,52 @@ class FloatingButtonService : Service() {
     }
 
     private fun selesaiMengambil(bitmap: Bitmap?) {
-        tombol?.visibility = View.VISIBLE
-        sedangMengambil = false
-
         if (bitmap == null) {
             Toast.makeText(this, R.string.tangkap_gagal, Toast.LENGTH_SHORT).show()
+            kembaliSiap()
+            return
+        }
+        if (tombol == null) {
+            // Tombol sudah dilepas saat gambar selesai diproses; hasilnya tidak dipakai.
+            bitmap.recycle()
+            status = Status.SIAP
             return
         }
         Log.i(TAG, "Tangkapan layar berhasil: ${bitmap.width} x ${bitmap.height}")
-        tampilkanThumbnail(bitmap)
+
+        // Tombol tetap tersembunyi selama layar pilih area terbuka.
+        val overlay = OverlayPilihArea(
+            this,
+            windowManager,
+            bitmap,
+            onBatal = { selesaiMemilih() },
+            onPotong = { potongan -> selesaiMemilih(potongan, gagal = potongan == null) },
+        )
+        if (!overlay.tampilkan()) {
+            Toast.makeText(this, R.string.pilih_gagal_dibuka, Toast.LENGTH_SHORT).show()
+            kembaliSiap()
+            return
+        }
+        overlayPilih = overlay
+        status = Status.MEMILIH
     }
 
-    /** Alat verifikasi sementara tahap 2: pratinjau kecil hasil tangkapan selama 1,5 detik. */
+    private fun selesaiMemilih(potongan: Bitmap? = null, gagal: Boolean = false) {
+        overlayPilih = null
+        if (gagal) Toast.makeText(this, R.string.potong_gagal, Toast.LENGTH_SHORT).show()
+        potongan?.let(::tampilkanThumbnail)
+        kembaliSiap()
+    }
+
+    private fun kembaliSiap() {
+        tombol?.visibility = View.VISIBLE
+        status = Status.SIAP
+    }
+
+    /**
+     * Alat verifikasi sementara selama pengembangan: pratinjau kecil potongan selama 1,5 detik.
+     * Potongan dibuang (recycle) saat pratinjau dilepas.
+     */
     private fun tampilkanThumbnail(bitmap: Bitmap) {
         val ukuranMaks = resources.getDimensionPixelSize(R.dimen.thumbnail_ukuran_maks)
         val bingkai = resources.getDimensionPixelSize(R.dimen.thumbnail_bingkai)
@@ -352,9 +384,11 @@ class FloatingButtonService : Service() {
             windowManager.addView(view, params)
         } catch (e: RuntimeException) {
             Log.w(TAG, "Gagal menampilkan thumbnail", e)
+            bitmap.recycle()
             return
         }
         thumbnail = view
+        bitmapThumbnail = bitmap
         handlerUtama.postDelayed(lepasThumbnailOtomatis, DURASI_THUMBNAIL_MS)
     }
 
@@ -362,10 +396,14 @@ class FloatingButtonService : Service() {
         handlerUtama.removeCallbacks(lepasThumbnailOtomatis)
         val view = thumbnail ?: return
         try {
-            windowManager.removeView(view)
+            // Dilepas seketika agar Bitmap yang dibuang di bawah tidak sempat digambar lagi.
+            windowManager.removeViewImmediate(view)
         } catch (e: IllegalArgumentException) {
             Log.w(TAG, "Thumbnail sudah tidak terpasang", e)
         } finally {
+            view.setImageDrawable(null)
+            bitmapThumbnail?.recycle()
+            bitmapThumbnail = null
             thumbnail = null
         }
     }
@@ -410,6 +448,8 @@ class FloatingButtonService : Service() {
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
     }
+
+    private enum class Status { SIAP, MENGAMBIL, MEMILIH }
 
     companion object {
         private const val TAG = "CekHoaks"

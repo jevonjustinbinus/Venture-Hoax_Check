@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Panel bawah layar pilih area: kotak petunjuk, tombol "Pilih seluruh layar", lalu Batal dan
+    Cek Sekarang. Panel tidak bisa diklik, jadi sentuhan di celah antartombol diteruskan ke
+    kotak seleksi di bawahnya. Padding bawah dan samping ditambah tinggi navigation bar dari kode.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/pilih_panel_jarak_samping"
+    android:paddingEnd="@dimen/pilih_panel_jarak_samping"
+    android:paddingBottom="@dimen/pilih_panel_jarak_bawah">
+
+    <TextView
+        android:id="@+id/pilih_petunjuk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_pilih_petunjuk"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp"
+        android:text="@string/pilih_petunjuk"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:drawableStart="@drawable/ic_geser" />
+
+    <Button
+        android:id="@+id/pilih_seluruh_layar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_pilih_tombol_teks"
+        android:contentDescription="@string/pilih_seluruh_layar_deskripsi"
+        android:minHeight="48dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:stateListAnimator="@null"
+        android:text="@string/pilih_seluruh_layar"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <!-- ButtonStyle: tombol sengaja memakai latar dan garis sesuai prototipe, bukan tombol tanpa bingkai -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        tools:ignore="ButtonStyle">
+
+        <Button
+            android:id="@+id/pilih_batal"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/pilih_tombol_tinggi"
+            android:layout_weight="1"
+            android:background="@drawable/bg_pilih_batal"
+            android:contentDescription="@string/pilih_batal_deskripsi"
+            android:stateListAnimator="@null"
+            android:text="@string/pilih_batal"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/pilih_cek"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/pilih_tombol_tinggi"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1.5"
+            android:background="@drawable/bg_pilih_cek"
+            android:contentDescription="@string/pilih_cek_deskripsi"
+            android:elevation="4dp"
+            android:stateListAnimator="@null"
+            android:text="@string/pilih_cek"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

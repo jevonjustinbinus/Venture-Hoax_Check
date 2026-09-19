@@ -8,6 +8,24 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="utama">#FF0F766E</color>
+    <color name="aksen">#FFF97316</color>
     <!-- Warna utama dengan opacity sekitar 93% (alpha 0xED) -->
     <color name="tombol_cek_latar">#ED0F766E</color>
+
+    <!-- Layar pilih area (dari prototipe) -->
+    <!-- #080F1A dengan opacity 68% (alpha 0xAD) -->
+    <color name="pilih_lapisan_gelap">#AD080F1A</color>
+    <!-- Cincin hijau muda di luar garis seleksi, opacity 55% -->
+    <color name="pilih_cincin">#8C2DD4BF</color>
+    <!-- Pegangan sisi: putih 85%, sengaja lebih samar dari pegangan sudut -->
+    <color name="pilih_pegangan_sisi">#D9FFFFFF</color>
+    <!-- #0F172A dengan opacity 92% -->
+    <color name="pilih_petunjuk_latar">#EB0F172A</color>
+    <color name="pilih_petunjuk_ikon">#FF5EEAD4</color>
+    <!-- Tombol Batal: latar putih 14%, garis putih 75% -->
+    <color name="pilih_batal_latar">#24FFFFFF</color>
+    <color name="pilih_batal_garis">#BFFFFFFF</color>
+    <!-- Latar tombol teks "Pilih seluruh layar": #0F172A dengan opacity 60% -->
+    <color name="pilih_tombol_teks_latar">#990F172A</color>
+    <color name="pilih_efek_tekan">#33FFFFFF</color>
 </resources>

@@ -137,7 +137,8 @@ Keyakinan ciri dianggap tinggi jika terdeteksi oleh aturan, atau oleh minimal du
 
 - **Warna:** utama `#0F766E`, aksen `#F97316`, teks utama `#0F172A`, teks sekunder `#64748B`.
 - **Tombol mengambang:** lingkaran 56dp berwarna utama dengan opacity sekitar 93%, ikon perisai centang putih 26dp, bayangan halus, menempel di tepi kanan dengan jarak 14dp, posisi awal sekitar 40% tinggi layar.
-- **Layar pilih area:** lapisan gelap `#080F1A` dengan opacity sekitar 68%, kotak seleksi bergaris putih 3dp dengan sudut membulat 8dp, pegangan di empat sudut (titik putih bergaris warna utama, area sentuh 44dp), kotak instruksi gelap di atas tombol, tombol "Batal" (sekunder) dan "Cek Sekarang" (warna aksen) setinggi 52dp, ukuran minimum kotak 96dp.
+- **Layar pilih area:** kilatan putih 150 ms saat layar diambil, lalu gambar layar beku dengan lapisan gelap `#080F1A` opacity sekitar 68% di luar seleksi. Kotak seleksi bergaris putih 3dp dengan sudut membulat 8dp dan cincin hijau muda tipis di luarnya. Kotak awal berada di tengah (80% lebar, 40% tinggi layar), dan ukuran minimumnya 96dp. Pegangan sudut berupa titik putih 16dp bergaris warna utama. Pegangan sisi berupa garis pendek putih yang lebih samar. Area sentuh semua pegangan 48dp. Panel bawah berisi kotak instruksi gelap, tombol teks "Pilih seluruh layar", lalu tombol "Batal" (sekunder) dan "Cek Sekarang" (warna aksen) setinggi 52dp. Panel memudar selama jari mengatur kotak dan muncul lagi setelah jari diangkat.
+- **Perilaku layar pilih area:** seret di luar kotak untuk menggambar kotak baru, seret di dalam kotak untuk memindahkannya, dan seret sudut atau sisi untuk mengubah ukurannya. Kotak tidak bisa keluar dari batas layar. Tombol Back sama dengan Batal. Kalau layar diputar, pemilihan dibatalkan.
 - **Kartu status:** latar putih, sudut membulat 20dp, thumbnail potongan 72dp, indikator loading, teks "Sedang menganalisis...", tombol "Tutup".
 - **Font:** Plus Jakarta Sans; untuk sementara boleh memakai sans-serif bawaan sistem.
 - **Prototipe interaktif:** https://claude.ai/artifact/WQgUGxKrXNEvJrbqK3w7kj (hanya bisa dibuka oleh pemilik akun; jika tidak bisa diakses, gunakan spesifikasi di atas).
@@ -172,7 +173,33 @@ Pengumpulan data dan fine-tuning classifier dikerjakan paralel mulai minggu 2 di
 ### Catatan teknis untuk tahap berikutnya
 
 - **Tahap 2 (Android 14 ke atas):** persetujuan screen capture harus diminta untuk setiap sesi; intent hasil persetujuan tidak boleh dipakai ulang; `MediaProjection.Callback` wajib didaftarkan sebelum `createVirtualDisplay`; `createVirtualDisplay` tidak boleh dipanggil lebih dari sekali pada objek MediaProjection yang sama; foreground service bertipe `mediaProjection` dimulai setelah persetujuan diperoleh dan sebelum `getMediaProjection`. Di dialog persetujuan, pengguna bisa memilih "satu aplikasi" atau "seluruh layar", jadi arahkan untuk memilih seluruh layar.
-- **Tahap 3:** overlay pilih area adalah jendela layar penuh, jadi harus menangani sentuhan sendiri dan dilepas dengan benar saat Batal maupun Cek Sekarang.
+- **Tahap 3 (selesai):**
+  - `OverlayPilihArea.kt` memasang jendela `TYPE_APPLICATION_OVERLAY` selebar layar fisik: `FLAG_LAYOUT_IN_SCREEN` dan `FLAG_LAYOUT_NO_LIMITS`, cutout `ALWAYS` (API 30+) atau `SHORT_EDGES` (API 28-29), dan `fitInsetsTypes = 0` (API 30+).
+  - Jendela ini bisa menerima fokus agar tombol Back sampai. Back ditangani lewat `KeyEvent` dan `OnBackInvokedCallback` (Android 13+).
+  - `CropSelectionView.kt` menggambar layar beku dan menangani gestur.
+  - Perhitungan kotak dan pemetaan koordinat view ke piksel Bitmap ada di `GeometriSeleksi.kt` dan diuji di `GeometriSeleksiTest.kt`.
+  - Screenshot penuh di-`recycle()` setelah dipotong maupun dibatalkan. Potongan hanya ditampilkan sebagai thumbnail sementara, lalu ikut di-`recycle()`. Tidak ada gambar yang ditulis ke disk.
+  - Selama overlay terbuka, ketukan tombol mengambang diabaikan.
+  - Rotasi (termasuk putaran 180°) dipantau lewat `DisplayManager` dan membatalkan pemilihan.
+  - **Hasil verifikasi otomatis:** `assembleDebug` berhasil, 27 unit test di `GeometriSeleksiTest` lulus, dan lint tidak menemukan peringatan baru.
+  - **Hasil uji manual:** Samsung Galaxy A55 5G, Android 16, mode navigasi 3 tombol. Semua uji di daftar bawah lulus di mode ini. Potongan di pojok status bar dan navigation bar pas, gambar beku sejajar dengan layar asli, Back berfungsi, dan tidak ada sentuhan yang membuka layar Home.
+  - **Belum diuji:** mode navigasi gestur, termasuk risiko seretan di dekat tepi bawah terbaca sebagai gestur Home dan Back lewat gestur geser dari tepi. Daftar uji perlu diulang di mode gestur.
+  - **Daftar uji manual** (pantau Logcat dengan filter `CekHoaks`; setiap pemotongan mencatat `Potongan: L x T dari (x, y)`):
+    - [x] Pojok kiri atas (area status bar): potongan berisi jam dan ikon status bar secara utuh, tidak bergeser.
+    - [x] Pojok kanan bawah (area navigation bar): potongan sampai tepi paling bawah layar; di log, `x + L` sama dengan lebar layar dan `y + T` sama dengan tinggi layar.
+    - [x] Gambar beku sejajar dengan layar asli, tidak "melompat", termasuk di HP berponi atau berlubang kamera. Tidak muncul log `Ukuran view ... berbeda dari tangkapan ...`.
+    - [x] Uji di atas dengan navigasi 3 tombol: tidak ada sentuhan yang membuka layar Home.
+    - [ ] Uji di atas dengan navigasi gestur: catat apakah menyeret di dekat tepi bawah terbaca sebagai gestur Home, dan seberapa mengganggu.
+    - [x] Keempat sudut dan keempat sisi: hanya tepi yang dipegang yang bergerak; kotak berhenti di ukuran minimum 96dp dan di tepi layar.
+    - [x] Pindah kotak ke keempat tepi layar; menyeret di luar kotak menggambar kotak baru; ketukan sekali di luar kotak tidak menghapus kotak lama.
+    - [x] Panel bawah memudar saat jari menggeser dan muncul lagi setelah jari diangkat.
+    - [x] "Pilih seluruh layar" menghasilkan potongan seukuran layar penuh dari `(0, 0)`.
+    - [x] Batal lewat tombol Batal dan lewat tombol Back ◁: overlay tertutup, tombol mengambang muncul lagi, aplikasi di bawahnya bisa disentuh dan diketik normal.
+    - [ ] Batal lewat gestur Back (geser dari tepi kiri atau kanan, mode navigasi gestur).
+    - [x] Rotasi layar saat overlay terbuka: overlay tertutup tanpa crash, tombol mengambang muncul lagi.
+    - [x] Ketuk tombol mengambang sekitar 5 kali dengan cepat: hanya satu layar pilih area yang muncul.
+    - [x] Proses cek diulang 10 kali (campuran Cek dan Batal): tanpa crash, dan grafik memori di Profiler tidak terus naik.
+    - [x] Tombol cek dimatikan dari notifikasi saat overlay terbuka: overlay ikut tertutup tanpa crash.
 - **Umum:** sistem atau aplikasi tertentu (misalnya halaman pengaturan izin dan aplikasi perbankan) dapat menyembunyikan overlay. Ini perilaku normal.
 
 ## 14. Di luar cakupan MVP (roadmap)

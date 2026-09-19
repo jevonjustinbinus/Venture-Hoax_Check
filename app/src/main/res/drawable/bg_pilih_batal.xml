@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ripple: efek gelombang saat tombol ditekan -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/pilih_efek_tekan">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/pilih_batal_latar" />
+            <stroke
+                android:width="1.5dp"
+                android:color="@color/pilih_batal_garis" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+</ripple>

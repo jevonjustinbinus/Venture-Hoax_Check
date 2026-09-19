@@ -7,8 +7,17 @@
     <!-- Ruang kosong di sekeliling lingkaran agar bayangan tidak terpotong tepi jendela overlay -->
     <dimen name="tombol_cek_ruang_bayangan">8dp</dimen>
 
-    <!-- Thumbnail sementara untuk memverifikasi hasil tangkapan layar (tahap 2) -->
+    <!-- Thumbnail sementara untuk memverifikasi hasil potongan (tahap 2-3) -->
     <dimen name="thumbnail_ukuran_maks">160dp</dimen>
     <dimen name="thumbnail_bingkai">3dp</dimen>
     <dimen name="thumbnail_jarak_bawah">48dp</dimen>
+
+    <!-- Layar pilih area -->
+    <dimen name="pilih_kotak_min">96dp</dimen>
+    <dimen name="pilih_area_sentuh">48dp</dimen>
+    <dimen name="pilih_pegangan_sudut">16dp</dimen>
+    <dimen name="pilih_pegangan_sisi">20dp</dimen>
+    <dimen name="pilih_panel_jarak_samping">20dp</dimen>
+    <dimen name="pilih_panel_jarak_bawah">16dp</dimen>
+    <dimen name="pilih_tombol_tinggi">52dp</dimen>
 </resources>

@@ -40,6 +40,15 @@ Semua repositori yang punya tombol mengambang (ScreenshotTile, SnapCrop) memasan
 
 Sesi rekam layar dibuka sekali saat tombol diaktifkan dan dipertahankan selama tombol aktif. Tidak ada referensi yang memakai pendekatan ini dengan cara yang sama, jadi `PengambilLayar.kt` ditulis sendiri berdasarkan dokumentasi Android, dengan pola dari screen-translator dan SnapCrop (MIT, dengan atribusi). Tidak ada kode dari repositori GPLv3 yang disalin.
 
+## Tahap 3 — Layar pilih area
+
+| Repositori | Lisensi | File yang relevan | Yang diambil | Catatan |
+|---|---|---|---|---|
+| SnapCrop | MIT (menurut README) | `SelectionView.kt` (enum mode sentuhan: kotak baru, pindah, empat sudut, empat sisi; sudut diperiksa sebelum sisi; batas kotak di dalam view; lapisan gelap di luar seleksi) | Pola diadaptasi, ditulis ulang. Atribusi ada di KDoc `CropSelectionView.kt` | Kotak di SnapCrop digeser secara bertahap per gerakan jari. Di proyek ini posisi dihitung dari posisi awal gestur, dan perhitungannya dipisah ke `GeometriSeleksi.kt` agar bisa diuji. SnapCrop menggambar Bitmap diregangkan ke seluruh view; di proyek ini skalanya seragam dan pemetaan ke piksel Bitmap dihitung eksplisit |
+| ScreenshotTile, ScreenshotApp | GPLv3 | Tidak dibaca untuk tahap ini | Tidak ada | |
+
+Ikon panah empat arah di kotak petunjuk (`ic_geser.xml`) digambar ulang dari prototipe proyek sendiri (`docs/prototype`).
+
 Aset pihak ketiga:
 
 | Aset | Sumber | Lisensi |
