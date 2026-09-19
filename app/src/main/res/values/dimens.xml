@@ -6,4 +6,9 @@
     <dimen name="tombol_cek_bayangan">4dp</dimen>
     <!-- Ruang kosong di sekeliling lingkaran agar bayangan tidak terpotong tepi jendela overlay -->
     <dimen name="tombol_cek_ruang_bayangan">8dp</dimen>
+
+    <!-- Thumbnail sementara untuk memverifikasi hasil tangkapan layar (tahap 2) -->
+    <dimen name="thumbnail_ukuran_maks">160dp</dimen>
+    <dimen name="thumbnail_bingkai">3dp</dimen>
+    <dimen name="thumbnail_jarak_bawah">48dp</dimen>
 </resources>

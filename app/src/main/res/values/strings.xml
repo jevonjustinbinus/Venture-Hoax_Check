@@ -13,8 +13,18 @@
     <string name="main_status_tombol_aktif">Tombol cek sedang tampil. Buka aplikasi lain untuk melihatnya.</string>
     <string name="main_status_tombol_mati">Tombol cek belum aktif.</string>
 
+    <!-- Penjelasan sebelum dialog izin rekam layar -->
+    <string name="rekam_judul">Izinkan tombol cek melihat layar</string>
+    <string name="rekam_penjelasan">Supaya tombol cek bisa mengambil gambar layar, aplikasi ini butuh izin rekam layar.\n\n• Layar hanya dibaca saat kamu menekan tombol cek.\n• Gambar layar tidak disimpan di HP.\n• Jika di dialog berikutnya ada pilihan, pilih \"Seluruh layar\", bukan satu aplikasi.</string>
+    <string name="rekam_catatan_notifikasi">Selama tombol cek aktif, Android akan menyembunyikan isi notifikasi demi keamananmu. Isinya akan tampil normal lagi setelah tombol cek dimatikan.</string>
+    <string name="rekam_lanjutkan">Lanjutkan</string>
+    <string name="rekam_batal">Batal</string>
+    <string name="rekam_ditolak">Tombol cek belum bisa aktif. Izin rekam layar diperlukan agar tombol bisa mengambil gambar layar.</string>
+
     <!-- Tombol mengambang -->
     <string name="tombol_cek_deskripsi">Cek informasi di layar ini</string>
+    <string name="tangkap_gagal">Gambar layar belum berhasil diambil. Coba ketuk tombol cek lagi.</string>
+    <string name="tangkap_thumbnail_deskripsi">Hasil tangkapan layar</string>
 
     <!-- Notifikasi -->
     <string name="notif_channel_nama">Tombol cek</string>

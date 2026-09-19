@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionConfig
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -19,13 +21,18 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,17 +46,38 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import com.example.cekhoaks.ui.theme.CekHoaksTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     // mutableStateOf membuat tampilan Compose otomatis diperbarui saat nilainya berubah.
     private var izinOverlay by mutableStateOf(false)
+    private var tampilkanPenjelasanRekam by mutableStateOf(false)
+    private var sedangMemintaIzinRekam = false
+    private val snackbarHostState = SnackbarHostState()
 
-    // Hasil dialog izin notifikasi diabaikan: tombol cek tetap dinyalakan meskipun izin ditolak.
+    // Hasil dialog izin notifikasi diabaikan: tombol cek tetap bisa aktif meskipun izin ditolak.
     private val mintaIzinNotifikasi =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            nyalakanTombolCek()
+            mintaIzinRekamLayar()
+        }
+
+    // Dialog izin rekam layar milik sistem. Hasilnya (kode + Intent) adalah "tiket" satu kali
+    // yang diteruskan ke service untuk membuka sesi rekam layar.
+    private val peluncurIzinRekam =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { hasil ->
+            sedangMemintaIzinRekam = false
+            val data = hasil.data
+            if (hasil.resultCode == RESULT_OK && data != null) {
+                ContextCompat.startForegroundService(
+                    this,
+                    FloatingButtonService.buatIntentMulai(this, hasil.resultCode, data),
+                )
+            } else {
+                tampilkanPesan(getString(R.string.rekam_ditolak))
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +86,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             CekHoaksTheme {
                 val tombolAktif by FloatingButtonService.berjalan.collectAsState()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                ) { innerPadding ->
                     LayarUtama(
                         izinOverlay = izinOverlay,
                         tombolAktif = tombolAktif,
@@ -66,6 +97,12 @@ class MainActivity : ComponentActivity() {
                         onBerikanIzin = ::bukaPengaturanIzin,
                         onAlihkanTombol = { if (tombolAktif) matikanTombolCek() else aktifkanTombolCek() },
                         modifier = Modifier.padding(innerPadding),
+                    )
+                }
+                if (tampilkanPenjelasanRekam) {
+                    DialogPenjelasanRekam(
+                        onLanjutkan = ::lanjutkanSetelahPenjelasan,
+                        onBatal = { tampilkanPenjelasanRekam = false },
                     )
                 }
             }
@@ -88,21 +125,49 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Alur mengaktifkan tombol: penjelasan, lalu izin notifikasi (Android 13+), lalu dialog
+    // izin rekam layar, lalu service dijalankan.
     private fun aktifkanTombolCek() {
+        tampilkanPenjelasanRekam = true
+    }
+
+    private fun lanjutkanSetelahPenjelasan() {
+        tampilkanPenjelasanRekam = false
         val perluIzinNotifikasi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
             PackageManager.PERMISSION_GRANTED
         if (perluIzinNotifikasi) {
             mintaIzinNotifikasi.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
-            nyalakanTombolCek()
+            mintaIzinRekamLayar()
         }
     }
 
-    private fun nyalakanTombolCek() {
+    private fun mintaIzinRekamLayar() {
         izinOverlay = Settings.canDrawOverlays(this)
-        if (!izinOverlay) return
-        ContextCompat.startForegroundService(this, Intent(this, FloatingButtonService::class.java))
+        // Penjaga agar dialog sistem tidak dibuka dua kali karena ketukan ganda.
+        if (!izinOverlay || sedangMemintaIzinRekam) return
+
+        val manager = getSystemService(MediaProjectionManager::class.java)
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // Android 14+: dialog sistem hanya menawarkan perekaman seluruh layar.
+            manager.createScreenCaptureIntent(MediaProjectionConfig.createConfigForDefaultDisplay())
+        } else {
+            manager.createScreenCaptureIntent()
+        }
+        sedangMemintaIzinRekam = true
+        try {
+            peluncurIzinRekam.launch(intent)
+        } catch (_: ActivityNotFoundException) {
+            sedangMemintaIzinRekam = false
+            tampilkanPesan(getString(R.string.rekam_ditolak))
+        }
+    }
+
+    private fun tampilkanPesan(pesan: String) {
+        lifecycleScope.launch {
+            snackbarHostState.showSnackbar(pesan, duration = SnackbarDuration.Long)
+        }
     }
 
     private fun matikanTombolCek() {
@@ -185,6 +250,11 @@ fun LayarUtama(
                 ) {
                     Text(stringResource(R.string.main_tombol_matikan))
                 }
+                Text(
+                    text = stringResource(R.string.rekam_catatan_notifikasi),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             } else {
                 Button(
                     onClick = onAlihkanTombol,
@@ -196,6 +266,33 @@ fun LayarUtama(
             }
         }
     }
+}
+
+@Composable
+fun DialogPenjelasanRekam(onLanjutkan: () -> Unit, onBatal: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onBatal,
+        title = { Text(stringResource(R.string.rekam_judul)) },
+        text = {
+            Text(
+                stringResource(R.string.rekam_penjelasan) + "\n\n" +
+                    stringResource(R.string.rekam_catatan_notifikasi),
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onLanjutkan,
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.utama)),
+            ) {
+                Text(stringResource(R.string.rekam_lanjutkan))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onBatal) {
+                Text(stringResource(R.string.rekam_batal))
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)

@@ -5,7 +5,8 @@
     <!-- Izin "tampil di atas aplikasi lain" untuk tombol mengambang -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Foreground service yang memegang sesi rekam layar (MediaProjection) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -30,15 +31,10 @@
             </intent-filter>
         </activity>
 
-        <!-- specialUse wajib disertai penjelasan kegunaan untuk peninjauan Google Play -->
         <service
             android:name=".FloatingButtonService"
             android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Menampilkan tombol mengambang di atas aplikasi lain agar pengguna dapat mengecek informasi di layar kapan saja." />
-        </service>
+            android:foregroundServiceType="mediaProjection" />
     </application>
 
 </manifest>

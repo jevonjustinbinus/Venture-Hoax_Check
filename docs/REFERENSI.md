@@ -26,6 +26,20 @@ Salinan repositori ada di `_referensi/` (di-clone dengan `git clone --depth 1`, 
 
 Semua repositori yang punya tombol mengambang (ScreenshotTile, SnapCrop) memasangnya dari AccessibilityService, sedangkan proyek ini memakai `SYSTEM_ALERT_WINDOW` + `TYPE_APPLICATION_OVERLAY` dari foreground service biasa. Implementasi tahap 1 ditulis sendiri berdasarkan dokumentasi Android, memakai pola dari screen-translator dan SnapCrop (MIT, dengan atribusi). Tidak ada kode dari repositori GPLv3 yang disalin.
 
+## Tahap 2 — Tombol bisa digeser dan ambil layar
+
+| Repositori | Lisensi | File yang relevan | Yang diambil | Catatan |
+|---|---|---|---|---|
+| screen-translator | MIT | `ScreenCaptureService.kt` (`startForeground` bertipe `FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION` sebelum `getMediaProjection`, `registerCallback` sebelum `createVirtualDisplay`, konversi `Image` ke `Bitmap` dengan `rowPadding` di `captureScreen()`); `MainActivity.kt` (hasil `createScreenCaptureIntent` diteruskan ke service lewat extra, penjaga klik ganda); `CHANGELOG.md` dan `release_notes_1.0.6.md` (perbaikan Android 14/15) | Pola diadaptasi, ditulis ulang. Atribusi ada di KDoc `PengambilLayar.kt` dan `FloatingButtonService.kt` | Konversi bitmapnya tidak memotong kolom padding, sehingga bitmap lebih lebar dari layar. Di proyek ini padding dipotong. VirtualDisplay-nya tidak menyesuaikan ukuran saat layar diputar |
+| SnapCrop | MIT (menurut README) | `ThreeFingerTouchOverlayView.kt` `handlePillTouchEvent` (simpan `rawY` dan `lp.y` saat `ACTION_DOWN`, anggap geseran setelah melewati `touchSlop`, `coerceIn`, `updateViewLayout`) | Pola diadaptasi, ditulis ulang. Atribusi ada di KDoc `FloatingButtonView.kt` dan `FloatingButtonService.kt` | Batas posisinya memakai margin tetap 24dp. Di proyek ini batasnya memakai tinggi status bar dan navigation bar. Pengambilan layarnya lewat AccessibilityService, jadi tidak diikuti |
+| MediaProjectionDemo | Tidak standar | `ScreenCaptureService.java` | Hanya konsep `VirtualDisplay` + `ImageReader` + `OnImageAvailableListener` di thread latar | Saat rotasi, kode ini membuat ulang VirtualDisplay, yang dilarang sejak Android 14. Proyek ini memakai `VirtualDisplay.resize()` + `setSurface()` |
+| ScreenshotTile | GPLv3 | `TakeScreenshotActivity.kt` (`createVirtualDisplay`, `stopScreenSharing`), `BasicForegroundService.kt` | Tidak ada kode yang disalin. Hanya dibaca untuk memahami bahwa izin Android 14 berlaku satu kali | Membuat VirtualDisplay baru untuk setiap screenshot, berbeda dari sesi permanen di proyek ini |
+| ScreenshotApp | GPLv3 | `capture/ScreenCaptureManager.kt`, `ui/capture/ScreenshotCaptureService.kt` | Tidak ada kode yang disalin. Hanya dibaca untuk memahami masalah frame basi di ImageReader | Sama dengan ScreenshotTile: VirtualDisplay dibuat dan dilepas setiap kali mengambil gambar |
+
+### Ringkasan tahap 2
+
+Sesi rekam layar dibuka sekali saat tombol diaktifkan dan dipertahankan selama tombol aktif. Tidak ada referensi yang memakai pendekatan ini dengan cara yang sama, jadi `PengambilLayar.kt` ditulis sendiri berdasarkan dokumentasi Android, dengan pola dari screen-translator dan SnapCrop (MIT, dengan atribusi). Tidak ada kode dari repositori GPLv3 yang disalin.
+
 Aset pihak ketiga:
 
 | Aset | Sumber | Lisensi |

@@ -16,3 +16,4 @@ local.properties
 
 # Salinan repositori referensi (tidak ikut build)
 /_referensi/
+/.idea/
